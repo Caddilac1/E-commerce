@@ -1,6 +1,7 @@
-console.log("Sammykeys Official is in");
 
 //getting all buttons
+var updateBtns = document.getElementsByClassName('update-cart');
+console.log("updateBtns",updateBtns);
 
 var updatebuttons = document.getElementsByClassName('update-cart');
 console.log(updatebuttons); // This will log an HTMLCollection
