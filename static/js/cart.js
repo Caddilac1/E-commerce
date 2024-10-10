@@ -3,14 +3,13 @@ console.log("Sammykeys Official is in");
 //getting all buttons
 
 var updatebuttons = document.getElementsByClassName('update-cart');
-console.log(updatebuttons);
+console.log(updatebuttons); // This will log an HTMLCollection
 
-for(var i = 0; i < updatebuttons; i++){
-updatebuttons[i].addEventListener('click',function(){
-    var productId = this.dataset.product;
-    var action = this.dataset.action;
-    console.log("productId",productId);
-    console.log("Action",action);
-})
+for ( var i = 0; i < updatebuttons.length; i++) {
+    updatebuttons[i].addEventListener('click', function() {
+        var productId = this.dataset.product
+        var action = this.dataset.action
+        console.log("ProductId:", productId , "Action:", action)
+    });
 }
 
