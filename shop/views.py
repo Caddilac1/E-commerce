@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from .models import *
+import json
+from django.http import JsonResponse
 # Create your views here.
 def store(request):
     products = Product.objects.all()
