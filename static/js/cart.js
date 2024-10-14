@@ -7,7 +7,38 @@ for ( var i = 0; i < updatebuttons.length; i++) {
     updatebuttons[i].addEventListener('click', function() {
         var productId = this.dataset.product
         var action = this.dataset.action
-        console.log("ProductId:", productId , "Action:", action)
+        console.log("ProductId:", productId , "Action:", action);
+        console.log("user",user);
+
+        if(user == "AnonymousUser"){
+            console.log("User is not logged in ...");
+        }
+        else{
+            updateUserOrder(productId, action);
+        }
     });
 }
 
+// codes for handling registered user add to carts
+function updateUserOrder(productId, action){
+    console.log("User is logged in sending data...");
+    var url = 'update_item';
+    fetch(url,{
+        method:"POST",
+        headers:{
+            'Content-Type':'application/json',
+            'X-CSRFToken':csrftoken
+        },
+        body:JSON.stringify({"productId":productId,"action":action}),
+    
+    }
+    .then((response)=>{
+        return response.JSON("Item was added")
+    })
+    .then((data)=>{
+        console.log("data",data);
+        location.reload();
+        //window.location.href = "{% url 'store' %}";
+    })
+    )
+}
