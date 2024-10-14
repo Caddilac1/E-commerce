@@ -34,3 +34,28 @@ def checkout(request):
         'items': items, 'order': order
     }
     return render(request,'checkout.html',context)
+
+
+def update_item(request):
+    data = json.loads(request.body)
+    product_id = data['productId']
+    action = data['action']
+    print("Action",action)
+    print("productId",product_id)
+    if request.user.is_authenticated:
+
+        customer = request.user.customer
+        order,created = Order.objects.get_or_create(customer=customer, complete=False)
+        orderitems, created = OrderItem.objects.get_or_create(customer=customer, order=order)
+        if action == "add":
+            orderitems.quantity = (orderitems.quantity + 1)
+            orderitems.save()
+        elif action == "remove":
+            orderitems.quantity = (orderitems.quantity - 1)
+            if orderitems.quantity <= 0:
+                orderitems.delete()
+                orderitems.save()
+    else:
+        print("User is not logged in ...")
+        print("Register to add items to cart ...")
+    return JsonResponse("Item was added successfully .....  ",safe=False)
