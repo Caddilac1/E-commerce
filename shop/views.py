@@ -4,8 +4,17 @@ import json
 from django.http import JsonResponse
 # Create your views here.
 def store(request):
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all() 
+        cart_items = order.get_cart_items 
+    else:
+        items = []
+        order ={'get_carttotal':0,'get_cart_items':0}
+        cart_items = order['get_cart_items']
     products = Product.objects.all()
-    context = {'products':products}
+    context = {'products':products,'items': items, 'order': order,'cart_items':cart_items}
     return render(request,'store.html',context)
 
 
@@ -41,7 +50,8 @@ def checkout(request):
 
 
 def update_item(request):
-    data = json.loads(request.body)
+    data = json.load(request.body)
+    print("data",data)
     product_id = data['productId']
     action = data['action']
     print("Action",action)
