@@ -17,11 +17,11 @@ def cart(request):
         cart_items = order.get_cart_items 
     else:
         items = []
-        order ={'get_carttotal':0}
-        cart_items = []
+        order ={'get_carttotal':0,'get_cart_items':0}
+        cart_items = order['get_cart_items']
 
     context = {
-        'items': items, 'order': order,'cart_items':cart_item
+        'items': items, 'order': order,'cart_items':cart_items
     }
     return render(request, 'cart.html', context)
 
