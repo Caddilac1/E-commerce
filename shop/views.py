@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import *
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 # Create your views here.
 def store(request):
@@ -78,4 +78,4 @@ def update_item(request):
     except:
         data = []
         messages.info(request, f"something went wrong.....")
-    return HttpResponse("Item was added successfully .....  ")
+    return JsonResponse("Item was added successfully .....  ",safe=False)
