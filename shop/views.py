@@ -13,13 +13,15 @@ def cart(request):
     if request.user.is_authenticated:
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        items = order.orderitem_set.all()  
+        items = order.orderitem_set.all() 
+        cart_items = order.get_cart_items 
     else:
         items = []
         order ={'get_carttotal':0}
+        cart_items = []
 
     context = {
-        'items': items, 'order': order
+        'items': items, 'order': order,'cart_items':cart_item
     }
     return render(request, 'cart.html', context)
 
