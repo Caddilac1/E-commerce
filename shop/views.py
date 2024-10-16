@@ -3,84 +3,55 @@ from .models import *
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import  login_required
 # Create your views here.
 def store(request):
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        items = order.orderitem_set.all() 
-        cart_items = order.get_cart_items 
-    else:
-        items = []
-        order ={'get_carttotal':0,'get_cart_items':0}
-        cart_items = order['get_cart_items']
     products = Product.objects.all()
-    context = {'products':products,'items': items, 'order': order,'cart_items':cart_items}
-    return render(request,'store.html',context)
+    context = {'products': products}
+    return render(request, 'store.html', context)
 
 
+
+
+@login_required
 def cart(request):
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        items = order.orderitem_set.all() 
-        cart_items = order.get_cart_items 
-    else:
-        items = []
-        order ={'get_carttotal':0,'get_cart_items':0}
-        cart_items = order['get_cart_items']
-
-    context = {
-        'items': items, 'order': order,'cart_items':cart_items
-    }
+    customer = request.user.customer
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    items = order.orderitem_set.all()
+    context = {'items': items, 'order': order}
     return render(request, 'cart.html', context)
 
+
+@login_required
 def checkout(request):
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        items = order.orderitem_set.all() 
-        cart_items = order.get_cart_items  
-    else:
-        items = []
-        order ={'get_carttotal':0,'get_cart_items':0}
-        cart_items = order['get_cart_items']
-
-    context = {
-        'items': items, 'order': order, 'cart_items':cart_items
-    }
-    return render(request,'checkout.html',context)
+    customer = request.user.customer
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    items = order.orderitem_set.all()
+    context = {'items': items, 'order': order}
+    return render(request, 'checkout.html', context)
 
 
+
+@login_required
 def update_item(request):
-    try:
-        data = json.loads(request.body)
-        print("data",data)
-        product_id = data['productId']
-        action = data['action']
-        print("Action",action)
-        print("productId",product_id)
-        
-        if request.user.is_authenticated:
-            customer = request.user.customer
-            product = Product.objects.get(id=product_id)
-            order,created = Order.objects.get_or_create(customer=customer, complete=False)
-            orderitems, created = OrderItem.objects.get_or_create(product=product, order=order)
-            if action == "add":
-                orderitems.quantity = (orderitems.quantity + 1)
-                orderitems.save()
-            elif action == "remove":
-                orderitems.quantity = (orderitems.quantity - 1)
-                if orderitems.quantity <= 0:
-                    orderitems.delete()
-                    orderitems.save()
-        else:
-            print("User is not logged in ...")
-            print("Register to add items to cart ...")
-    except Product.DoesNotExist:
-        return JsonResponse({'error': 'Product not found'}, status=404)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+    data = json.loads(request.body)
+    product_id = data['productId']
+    action = data['action']
 
-        messages.info(request, f"something went wrong.....")
-    return JsonResponse("Item was added successfully .....  ",safe=False)
+    customer = request.user.customer
+    product = Product.objects.get(id=product_id)
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+
+    order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
+
+    if action == 'add':
+        order_item.quantity += 1
+    elif action == 'remove':
+        order_item.quantity -= 1
+
+    order_item.save()
+
+    if order_item.quantity <= 0:
+        order_item.delete()
+
+    return JsonResponse('Item was updated', safe=False)
