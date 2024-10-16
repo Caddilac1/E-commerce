@@ -35,15 +35,17 @@ class Order(models.Model):
 
      @property
      def get_carttotal(self):
-          orderitem = self.orderitem_set.all()
-          total = sum([item.gettotal for item in orderitem])
+          order_items = self.orderitem_set.all()
+          total = sum([item.get_total for item in order_items])
           return total
-          
+
      @property
      def get_cart_items(self):
-          orderitem = self.orderitem_set.all()
-          total = sum([item.quantity for item in orderitem])
+          order_items = self.orderitem_set.all()
+          total = sum([item.quantity for item in order_items])
           return total
+
+
 
      def __str__(self):
             return self.customer.name
@@ -56,15 +58,9 @@ class OrderItem(models.Model):
      date_added = models.DateTimeField(auto_now_add=True)
 
      @property
-     def gettotal(self):
-          total = self.quantity * self.product.price
-          return total
-    
-     @property
-     def get_carttotal(self):
-          orderitem = self.Orderitem_set.all()
-          total = sum([item.gettotal for item in orderitem])
-          return total
+     def get_total(self):
+         total = self.quantity * self.product.price
+         return total
 
      def __str__(self):
           return self.product.name
