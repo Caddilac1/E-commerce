@@ -32,9 +32,13 @@ function updateUserOrder(productId, action){
         body:JSON.stringify({"productId":productId,"action":action}),
     
     }
-    .then((response)=>{
-        return response.JSON("Item was added")
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+        return response.json();
     })
+
     .then((data)=>{
         console.log("data",data);
         location.reload();
