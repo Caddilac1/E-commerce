@@ -59,9 +59,9 @@
 	    		<img  id="cart-icon" src="{% static 'images/images.jpeg' %}">
 	    	</a>
 			{% if cart_items %}
-	    	<p id="cart-total">{{order.get_cart_items}}</p>
+	    	<p id="cart-total">{{cart_items}}</p>
 			{% else %}
-			<p id="cart-total">{{order.get_cart_items}}</p>
+			<p id="cart-total">{{cart_items}}</p>
             {% endif %}
 	    </div>
 	  </div>
