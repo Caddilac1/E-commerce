@@ -20,29 +20,29 @@ for ( var i = 0; i < updatebuttons.length; i++) {
 }
 
 // codes for handling registered user add to carts
-function updateUserOrder(productId, action){
+function updateUserOrder(productId, action) {
     console.log("User is logged in sending data...");
-    var url = 'update_item';
-    fetch(url,{
-        method:"POST",
-        headers:{
-            'Content-Type':'application/json',
-            'X-CSRFToken':csrftoken
+    var url = '/update_item/';
+
+    fetch(url, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
         },
-        body:JSON.stringify({"productId":productId,"action":action}),
-    
-    }
+        body: JSON.stringify({"productId": productId, "action": action}),
+    })
     .then((response) => {
         if (!response.ok) {
             throw new Error(response.statusText);
         }
         return response.json();
     })
-
-    .then((data)=>{
-        console.log("data",data);
+    .then((data) => {
+        console.log("data", data);
         location.reload();
-        //window.location.href = "{% url 'store' %}";
     })
-    )
+    .catch((error) => {
+        console.error("Error updating order:", error);
+    });
 }
