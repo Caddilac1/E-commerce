@@ -60,10 +60,12 @@ def update_item(request):
         action = data['action']
         print("Action",action)
         print("productId",product_id)
+        
         if request.user.is_authenticated:
             customer = request.user.customer
+            product = Product.objects.get(id=product_id)
             order,created = Order.objects.get_or_create(customer=customer, complete=False)
-            orderitems, created = OrderItem.objects.get_or_create(customer=customer, order=order)
+            orderitems, created = OrderItem.objects.get_or_create(product=product, order=order)
             if action == "add":
                 orderitems.quantity = (orderitems.quantity + 1)
                 orderitems.save()
@@ -75,7 +77,10 @@ def update_item(request):
         else:
             print("User is not logged in ...")
             print("Register to add items to cart ...")
-    except:
-        data = []
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
         messages.info(request, f"something went wrong.....")
     return JsonResponse("Item was added successfully .....  ",safe=False)
