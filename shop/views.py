@@ -6,8 +6,18 @@ from django.contrib import messages
 from django.contrib.auth.decorators import  login_required
 # Create your views here.
 def store(request):
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+       # items = order.orderitem_set.all()
+        cart_item = order.get_cart_items
+    else:
+        order = {'get_carttotal':0,'get_cart_items':0}
+        items = []
+        cart_item = order['get_cart_items']
+
     products = Product.objects.all()
-    context = {'products': products}
+    context = {'products': products,'order':order,'cart_item':cart_item}
     return render(request, 'store.html', context)
 
 
@@ -18,7 +28,8 @@ def cart(request):
     customer = request.user.customer
     order, created = Order.objects.get_or_create(customer=customer, complete=False)
     items = order.orderitem_set.all()
-    context = {'items': items, 'order': order}
+    cart_item = order.get_cart_items
+    context = {'items': items, 'order': order,'cart_item':cart_item}
     return render(request, 'cart.html', context)
 
 
@@ -27,7 +38,8 @@ def checkout(request):
     customer = request.user.customer
     order, created = Order.objects.get_or_create(customer=customer, complete=False)
     items = order.orderitem_set.all()
-    context = {'items': items, 'order': order}
+    cart_item = order.get_cart_items
+    context = {'items': items, 'order': order,'cart_item':cart_item}
     return render(request, 'checkout.html', context)
 
 
