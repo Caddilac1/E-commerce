@@ -61,9 +61,9 @@ var csrftoken = getToken('csrftoken');
 	    		<img  id="cart-icon" src="{% static 'images/images.jpeg' %}">
 	    	</a>
 			{% if cart_items %}
-	    	<p id="cart-total">{{cart_items}}</p>
+	    	<p id="cart-total">{{cart_item}}</p>
 			{% else %}
-			<p id="cart-total">{{cart_items}}</p>
+			<p id="cart-total">{{cart_item}}</p>
             {% endif %}
 	    </div>
 	  </div>
