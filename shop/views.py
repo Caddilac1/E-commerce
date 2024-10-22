@@ -1,9 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from .models import *
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import  login_required
+from .forms import  CreateUserAccount
+from django.contrib.auth import authenticate, login, logout
+
 # Create your views here.
 def store(request):
     if request.user.is_authenticated:
@@ -67,3 +70,55 @@ def update_item(request):
         order_item.delete()
 
     return JsonResponse('Item was updated', safe=False)
+
+
+
+
+def signup(request):
+    if request.user.is_authenticated:
+        return redirect('store')
+    if request.method == 'POST':
+        form = CreateUserAccount(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.save()
+            customer = Customer.objects.create(user=user)
+            messages.success(request, f"Acount created sucessfully....")
+            return redirect("signin")
+        else:
+            print("Something went wrong")
+    else:
+        form = CreateUserAccount()
+    context = {'form':form}
+    return render(request, 'signup.html',context)
+
+
+def signin(request):
+    if request.method == 'POST':
+        n =request.POST['username']
+        p = request.POST['password']
+        try:
+            if User.objects.filter(username=n).exists():
+                user = User.objects.get(username=n)
+                if user.is_active:
+                    user = authenticate(request, username=n,password=p)
+                    login(request, user)
+                    return redirect("store")
+                else:
+                    user_one = authenticate(request, username=n,password=p)
+                    if user_one is not None: 
+                        login(request, user_one)
+                    else:
+                        print("Something went wrong ..")
+                        messages.info(request,f"Contact your programmers for more info....")
+            else:
+                messages.info(request,f"Account not found")
+        except(User.DoesNotExist):
+            user = None
+            print("User is none")
+    return render(request,'signin.html')
+
+
+def signout(request):
+    logout(request)
+    return redirect('store')
