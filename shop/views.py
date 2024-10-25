@@ -122,3 +122,18 @@ def signin(request):
 def signout(request):
     logout(request)
     return redirect('store')
+
+
+def user_dashboard(request):
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+    else:
+        print("user is not logged in")
+    context={
+        
+        'order':order,
+        'items':items
+    }
+    return render(request, 'user_dashboard.html')
