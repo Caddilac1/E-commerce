@@ -9,4 +9,5 @@ path('update_item/',views.update_item, name='update_item'),
 path('signup/',views.signup, name='signup'),
 path('signin/',views.signin, name='signin'),
 path('signout/',views.signout, name='signout'),
+path('user_dashboard/',views.user_dashboard, name='user_dashboard'),
 ]
